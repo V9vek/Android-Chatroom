@@ -1,0 +1,55 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
+
+        <item name="android:fontFamily">@font/nunito</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="editTextStyle">@style/CustomEditTextStyle</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+    </style>
+
+    <style name="CustomEditTextStyle" parent="@android:style/Widget.EditText">
+        <item name="android:background">@drawable/background_edittext</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColorHint">@color/colorGray</item>
+    </style>
+
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorSurface">@color/colorPrimary</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/TitleTextStyle</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/BodyTextStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+    </style>
+
+    <style name="TitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">#fafafa</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="BodyTextStyle" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="rippleColor">@color/colorAccent</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="rippleColor">@color/colorWhite</item>
+    </style>
+
+</resources>

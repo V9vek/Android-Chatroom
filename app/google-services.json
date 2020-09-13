@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "870813589258",
+    "firebase_url": "https://maps2020-cae2d.firebaseio.com",
+    "project_id": "maps2020-cae2d",
+    "storage_bucket": "maps2020-cae2d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870813589258:android:300110b9231f8143aa64f3",
+        "android_client_info": {
+          "package_name": "com.project.googlemaps2020"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "870813589258-fln8ggt36q1ekik7uaepj9c50fifppq1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDA4TSXUxcuuqklrJRruNU0ouq3xMo8T40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870813589258-fln8ggt36q1ekik7uaepj9c50fifppq1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
