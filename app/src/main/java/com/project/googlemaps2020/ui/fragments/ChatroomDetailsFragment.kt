@@ -59,6 +59,10 @@ class ChatroomDetailsFragment : Fragment(R.layout.fragment_chatroom_details) {
         tvLeaveChatroom.setOnClickListener {
             leaveChatroom()
         }
+
+        ivMap.setOnClickListener {
+            findNavController().navigate(R.id.action_chatroomDetailsFragment_to_chatroomMapFragment)
+        }
     }
 
     private fun leaveChatroom() {
@@ -70,12 +74,16 @@ class ChatroomDetailsFragment : Fragment(R.layout.fragment_chatroom_details) {
         viewModel.chatroomUsersState.observe(viewLifecycleOwner, {
             when (it) {
                 is Resource.Success -> {
-                    chatroomUsersAdapter.submitList(it.data)
+                    it.data?.let { userList ->
+                        chatroomUsersAdapter.submitList(userList)
+                        viewModel.getUserLocation(userList)
+                    }
                 }
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                 }
             }
+            // viewModel.unsetChatroomUsers()                          // users getting observed again due to snapshot listener
         })
     }
 

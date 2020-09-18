@@ -5,11 +5,13 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.StorageReference
 import com.project.googlemaps2020.models.ChatMessage
 import com.project.googlemaps2020.models.Chatroom
 import com.project.googlemaps2020.models.User
+import com.project.googlemaps2020.models.UserLocation
 import kotlinx.coroutines.tasks.await
 
 class MainRepository(
@@ -120,6 +122,25 @@ class MainRepository(
     fun getChatroomUsers(chatroomId: String): CollectionReference {
         return firestoreRef.collection("Chatrooms")
             .document(chatroomId).collection("User List")
+    }
+
+    suspend fun saveUserLocation(geoPoint: GeoPoint) {
+        val user = getCurrentlyLoggedInUser()
+
+        val locationRef = firestoreRef.collection("User Locations")
+            .document(getUid()!!)
+        val userLocation = UserLocation(geoPoint, System.currentTimeMillis(), user)
+
+        locationRef.set(userLocation).await()
+    }
+
+    suspend fun getUserLocation(userId: String): UserLocation {
+        val locationRef = firestoreRef.collection("User Locations")
+            .document(userId)
+        val userLocationSnapshot = locationRef.get().await()
+        val userLocation = userLocationSnapshot.toObject<UserLocation>()
+
+        return userLocation!!
     }
 }
 

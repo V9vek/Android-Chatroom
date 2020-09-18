@@ -14,7 +14,6 @@ import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.googlemaps2020.R
-import com.project.googlemaps2020.utils.Constants.CHATROOM_IMAGE_PICK_CODE
 import com.project.googlemaps2020.utils.Constants.IMAGE_PICK_CODE
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,7 +64,7 @@ class CreateChatroomDialog : DialogFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == CHATROOM_IMAGE_PICK_CODE) {
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             data?.data.let { uri ->
                 uri?.let {
                     setChatroomImage(it)

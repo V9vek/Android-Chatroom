@@ -138,7 +138,7 @@ class ChatroomFragment : Fragment(R.layout.fragment_chatroom) {
 
     private fun scrollToBottom() {
         if (chatMessageAdapter.currentList.size > 0) {
-            rvChat.smoothScrollToPosition(chatMessageAdapter.itemCount - 1)
+            rvChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
         }
     }
 

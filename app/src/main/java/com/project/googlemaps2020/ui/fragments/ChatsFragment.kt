@@ -1,5 +1,8 @@
 package com.project.googlemaps2020.ui.fragments
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -9,20 +12,29 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.project.googlemaps2020.R
 import com.project.googlemaps2020.adapters.ChatroomsAdapter
 import com.project.googlemaps2020.models.Chatroom
+import com.project.googlemaps2020.utils.Constants
 import com.project.googlemaps2020.utils.Resource
+import com.project.googlemaps2020.utils.TrackingUtility
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_chats.*
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
+import javax.inject.Inject
 
 private const val CREATE_CHATROOM_DIALOG_TAG = "CreateChatroom"
 
 @AndroidEntryPoint
-class ChatsFragment : Fragment(R.layout.fragment_chats) {
+class ChatsFragment : Fragment(R.layout.fragment_chats), EasyPermissions.PermissionCallbacks {
 
     private val viewModel: ChatroomViewModel by activityViewModels()
+
+    @Inject
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private lateinit var chatroomsAdapter: ChatroomsAdapter
 
@@ -42,9 +54,64 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
             })
         }
 
+        requestPermissions()
         setupOnClickListeners()
         setupObservers()
         setUpRecyclerView()
+    }
+
+    private fun requestPermissions() {
+        if (TrackingUtility.hasLocationPermission(requireContext())) {
+            return
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permissions",
+                Constants.REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permissions",
+                Constants.REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            )
+        }
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        getLastLocation()
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this).build().show()
+        } else {
+            requestPermissions()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation() {
+        if (TrackingUtility.hasLocationPermission(requireContext())) {
+            println("AppDebug: getLastLocation")
+            viewModel.getLastLocation(fusedLocationProviderClient)
+        }
     }
 
     private fun setupOnClickListeners() {
@@ -89,7 +156,6 @@ class ChatsFragment : Fragment(R.layout.fragment_chats) {
 
             viewModel.unsetChatroomState()              // chatroom state do not get observed again ,so chatroom don't get created again
         })
-
 
         viewModel.chatroomsState.observe(viewLifecycleOwner, {
             when (it) {

@@ -3,7 +3,6 @@ package com.project.googlemaps2020.ui.fragments
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -57,7 +56,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setupObservers() {
-        viewModel.profileState.observe(viewLifecycleOwner, {
+        viewModel.currentUserState.observe(viewLifecycleOwner, {
             when (it) {
                 is Resource.Success -> {
                     val user = it.data

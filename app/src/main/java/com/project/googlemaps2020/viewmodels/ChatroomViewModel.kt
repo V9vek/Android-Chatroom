@@ -1,19 +1,24 @@
 package com.project.googlemaps2020.viewmodels
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import com.project.googlemaps2020.models.ChatMessage
 import com.project.googlemaps2020.models.Chatroom
 import com.project.googlemaps2020.models.User
+import com.project.googlemaps2020.models.UserLocation
 import com.project.googlemaps2020.repository.MainRepository
 import com.project.googlemaps2020.utils.Resource
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class ChatroomViewModel
 @ViewModelInject
@@ -21,15 +26,16 @@ constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    var createChatroomState = MutableLiveData<Resource<Chatroom>>()
-    var chatroomsState = MutableLiveData<Resource<List<Chatroom>>>()
+    val createChatroomState = MutableLiveData<Resource<Chatroom>>()
+    val chatroomsState = MutableLiveData<Resource<List<Chatroom>>>()
     val newMessageState = MutableLiveData<Resource<Nothing>>()
     val chatMessagesState = MutableLiveData<Resource<List<ChatMessage>>>()
     val chatroomUsersState = MutableLiveData<Resource<List<User>>>()
-    val profileState = MutableLiveData<Resource<User>>()
+    val userLocationsState = MutableLiveData<MutableList<UserLocation>>()
+    val currentUserState = MutableLiveData<Resource<User>>()
 
-    var chatroomImageUri = MutableLiveData<Uri>()
-    var profileImageUri = MutableLiveData<String>()
+    val chatroomImageUri = MutableLiveData<Uri>()
+    val profileImageUri = MutableLiveData<String>()
 
     init {
         getCurrentUserProfileImage()
@@ -39,9 +45,9 @@ constructor(
     fun getCurrentlyLoggedInUser() = viewModelScope.launch {
         try {
             val user = repository.getCurrentlyLoggedInUser()
-            profileState.postValue(Resource.Success(user, ""))
+            currentUserState.postValue(Resource.Success(user, ""))
         } catch (e: Exception) {
-            profileState.postValue(Resource.Error(e.message))
+            currentUserState.postValue(Resource.Error(e.message))
         }
     }
 
@@ -150,8 +156,8 @@ constructor(
                     val users: MutableList<User> = mutableListOf()
                     querySnapshot?.let {
                         for (document in it) {
-                            val chatMessage = document.toObject<User>()
-                            users.add(chatMessage)
+                            val user = document.toObject<User>()
+                            users.add(user)
                         }
                     }
                     chatroomUsersState.postValue(Resource.Success(users, ""))
@@ -160,6 +166,27 @@ constructor(
             chatroomUsersState.postValue(Resource.Error(e.message))
         }
     }
+
+    fun getUserLocation(userList: List<User>) = viewModelScope.launch {
+        try {
+            val userLocations: MutableList<UserLocation> = mutableListOf()
+            for (user in userList) {
+                val location = repository.getUserLocation(user.user_id)
+                userLocations.add(location)
+            }
+            userLocationsState.postValue(userLocations)
+        } catch (e: Exception) {
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getLastLocation(fusedLocationProviderClient: FusedLocationProviderClient) =
+        viewModelScope.launch {
+            val location = fusedLocationProviderClient.lastLocation.await()
+            val geoPoint = GeoPoint(location.latitude, location.longitude)
+
+            repository.saveUserLocation(geoPoint)
+        }
 
     fun logout() {
         repository.logout()
@@ -179,6 +206,10 @@ constructor(
 
     fun unsetChatMessagesState() {
         chatMessagesState.postValue(null)
+    }
+
+    fun unsetChatroomUsers() {
+        chatroomUsersState.postValue(null)
     }
 }
 

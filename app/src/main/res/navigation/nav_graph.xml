@@ -94,6 +94,9 @@
             app:destination="@id/chatsFragment"
             app:popUpTo="@id/chatsFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_chatroomDetailsFragment_to_chatroomMapFragment"
+            app:destination="@id/chatroomMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -106,5 +109,10 @@
             app:popUpTo="@id/chatsFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/chatroomMapFragment"
+        android:name="com.project.googlemaps2020.ui.fragments.ChatroomMapFragment"
+        android:label="ChatroomMapFragment"
+        tools:layout="@layout/fragment_chatroom_map"/>
 
 </navigation>
