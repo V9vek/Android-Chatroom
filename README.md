@@ -24,9 +24,17 @@ This project is for focusing especially on the [Cloud Firestore](https://firebas
 App is based on MVVM architecture and a repository pattern.
 
 ### Screenshots
-<img src="screenshots/screen_login.png" width=200/>     <img src="screenshots/screen_signup.png" width=200/>     <img src="screenshots/screen_chats.png" width=200/>    <img src="screenshots/screen_create_chatroom.png" width=200/>
+<pre>
+<img src="screenshots/screen_login.png" alt="login-screen" width="200"/> <img src="screenshots/screen_signup.png" alt="signup-screen" width="200"/> <img src="screenshots/screen_chats.png" alt="chat-screen" width="200"/> <img src="screenshots/screen_create_chatroom.png" alt="create-chatroom-screen" width="200"/> <img src="screenshots/screen_profile.png" alt="profile-screen" width="200"/> <img src="screenshots/screen_chatroom.png" alt="chatroom-screen" width="200"/>  <img src="screenshots/screen_chatroom_details.png" alt="chatroom-details-screen" width="200"/>  <img src="screenshots/screen_map.png" alt="map-screen" width="200"/>
+</pre>
 
-<img src="screenshots/screen_profile.png" width=200/>  <img src="screenshots/screen_chatroom.png" width=200/>   <img src="screenshots/screen_chatroom_details.png" width=200/>  <img src="screenshots/screen_map.png" width=200/>
+### Getting Started
+* Clone or download repository as a zip file.
+* Open project in Android Studio.
+* Create Firebase project.
+* Paste google-services.json file in app/ folder
+* In Firebase console enable services Authentication, Cloud Firestore and Storage
+* Finally run the app `SHIFT+F10`.
 
 ### TODO
 - Realtime GPS updates of user location
