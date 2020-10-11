@@ -12,8 +12,10 @@ import com.project.googlemaps2020.R
 import com.project.googlemaps2020.models.User
 import com.project.googlemaps2020.utils.Resource
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_profile.*
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private val viewModel: ChatroomViewModel by activityViewModels()

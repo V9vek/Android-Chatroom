@@ -15,8 +15,10 @@ import com.project.googlemaps2020.adapters.ChatMessageAdapter
 import com.project.googlemaps2020.models.Chatroom
 import com.project.googlemaps2020.utils.Resource
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_chatroom.*
 
+@AndroidEntryPoint
 class ChatroomFragment : Fragment(R.layout.fragment_chatroom) {
 
     private val args: ChatroomFragmentArgs by navArgs()
