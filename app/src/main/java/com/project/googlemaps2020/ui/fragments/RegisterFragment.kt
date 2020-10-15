@@ -12,13 +12,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.project.googlemaps2020.R
+import com.project.googlemaps2020.databinding.FragmentRegisterBinding
 import com.project.googlemaps2020.utils.Constants.IMAGE_PICK_CODE
 import com.project.googlemaps2020.utils.Constants.REQUEST_CODE_STORAGE_PERMISSION
 import com.project.googlemaps2020.utils.GalleryUtility
 import com.project.googlemaps2020.utils.Resource
 import com.project.googlemaps2020.viewmodels.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_register.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -27,18 +27,21 @@ class RegisterFragment : Fragment(R.layout.fragment_register), EasyPermissions.P
 
     private val viewModel: AuthViewModel by viewModels()
 
+    private var _binding: FragmentRegisterBinding? = null
+    private val binding get() = _binding!!
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentRegisterBinding.bind(view)
 
         setupOnClickListeners()
-
         setupObservers()
     }
 
     private fun setupObservers() {
         viewModel.profileImageUri.observe(viewLifecycleOwner, {
-            Glide.with(requireContext()).load(it).into(ivSignupProfile)
-            btnSignupProfile.alpha = 0f
+            Glide.with(requireContext()).load(it).into(binding.ivSignupProfile)
+            binding.btnSignupProfile.alpha = 0f
         })
 
         viewModel.registerState.observe(viewLifecycleOwner, {
@@ -46,7 +49,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register), EasyPermissions.P
                 is Resource.Success -> {
                     progressBar(false)
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_registerFragment_to_chatsFragment)
+                    findNavController().navigate(
+                        RegisterFragmentDirections.actionRegisterFragmentToChatsFragment()
+                    )
                 }
 
                 is Resource.Error -> {
@@ -62,25 +67,31 @@ class RegisterFragment : Fragment(R.layout.fragment_register), EasyPermissions.P
     }
 
     private fun progressBar(visible: Boolean) {
-        signupProgressBar.isVisible = visible
-        btnSignup.isVisible = !visible
+        binding.apply {
+            signupProgressBar.isVisible = visible
+            btnSignup.isVisible = !visible
+        }
     }
 
     private fun setupOnClickListeners() {
-        btnSignupProfile.setOnClickListener {
-            requestPermissions()
-        }
+        binding.apply {
+            btnSignupProfile.setOnClickListener {
+                requestPermissions()
+            }
 
-        btnSignup.setOnClickListener {
-            val username = etSignupUsername.text.toString()
-            val email = etSignupEmail.text.toString()
-            val password = etSignupPassword.text.toString()
-            val confirmPassword = etSignupConfirmPassword.text.toString()
-            viewModel.registerUser(username, email, password, confirmPassword)
-        }
+            btnSignup.setOnClickListener {
+                val username = etSignupUsername.text.toString()
+                val email = etSignupEmail.text.toString()
+                val password = etSignupPassword.text.toString()
+                val confirmPassword = etSignupConfirmPassword.text.toString()
+                viewModel.registerUser(username, email, password, confirmPassword)
+            }
 
-        tvLogin.setOnClickListener {
-            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+            tvLogin.setOnClickListener {
+                findNavController().navigate(
+                    RegisterFragmentDirections.actionRegisterFragmentToLoginFragment()
+                )
+            }
         }
     }
 
@@ -133,5 +144,10 @@ class RegisterFragment : Fragment(R.layout.fragment_register), EasyPermissions.P
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

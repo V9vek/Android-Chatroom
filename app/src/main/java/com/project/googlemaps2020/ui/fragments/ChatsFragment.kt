@@ -15,13 +15,13 @@ import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.project.googlemaps2020.R
 import com.project.googlemaps2020.adapters.ChatroomsAdapter
+import com.project.googlemaps2020.databinding.FragmentChatsBinding
 import com.project.googlemaps2020.models.Chatroom
 import com.project.googlemaps2020.utils.Constants
 import com.project.googlemaps2020.utils.Resource
 import com.project.googlemaps2020.utils.TrackingUtility
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_chats.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import javax.inject.Inject
@@ -33,6 +33,9 @@ class ChatsFragment : Fragment(R.layout.fragment_chats), EasyPermissions.Permiss
 
     private val viewModel: ChatroomViewModel by activityViewModels()
 
+    private var _binding: FragmentChatsBinding? = null
+    private val binding get() = _binding!!
+
     @Inject
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -40,6 +43,7 @@ class ChatsFragment : Fragment(R.layout.fragment_chats), EasyPermissions.Permiss
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentChatsBinding.bind(view)
 
         // On rotation resetting createListener of dialog, which is called when create btn is clicked
         if (savedInstanceState != null) {
@@ -115,12 +119,14 @@ class ChatsFragment : Fragment(R.layout.fragment_chats), EasyPermissions.Permiss
     }
 
     private fun setupOnClickListeners() {
-        layoutNewChatroom.setOnClickListener {
-            showCreateChatroomDialog()
-        }
+        binding.apply {
+            layoutNewChatroom.setOnClickListener {
+                showCreateChatroomDialog()
+            }
 
-        ivProfileImage.setOnClickListener {
-            findNavController().navigate(R.id.action_chatsFragment_to_profileFragment)
+            ivProfileImage.setOnClickListener {
+                findNavController().navigate(R.id.action_chatsFragment_to_profileFragment)
+            }
         }
     }
 
@@ -130,8 +136,8 @@ class ChatsFragment : Fragment(R.layout.fragment_chats), EasyPermissions.Permiss
 
     private fun setupObservers() {
         viewModel.profileImageUri.observe(viewLifecycleOwner, {
-            Glide.with(requireContext()).load(it).placeholder(ivProfileImage.drawable)
-                .into(ivProfileImage)
+            Glide.with(requireContext()).load(it).placeholder(binding.ivProfileImage.drawable)
+                .into(binding.ivProfileImage)
         })
 
         viewModel.createChatroomState.observe(viewLifecycleOwner, {
@@ -140,7 +146,7 @@ class ChatsFragment : Fragment(R.layout.fragment_chats), EasyPermissions.Permiss
                     progressBarTillCreate(false)
                     val chatroom = it.data
                     chatroom?.let { room ->
-                        createBundleAndNavigateToChatroomFragment(room)
+                        navigateToChatroomFragment(room)
                     }
                 }
 
@@ -179,30 +185,36 @@ class ChatsFragment : Fragment(R.layout.fragment_chats), EasyPermissions.Permiss
     }
 
     private fun setUpRecyclerView() {
-        rvChatrooms.apply {
+        binding.rvChatrooms.apply {
             chatroomsAdapter = ChatroomsAdapter()
             adapter = chatroomsAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
         chatroomsAdapter.setOnChatroomItemClickListener {
-            createBundleAndNavigateToChatroomFragment(it)
+            navigateToChatroomFragment(it)
         }
     }
 
-    private fun createBundleAndNavigateToChatroomFragment(chatroom: Chatroom) {
-        val bundle = Bundle().apply {
-            putParcelable("chatroom", chatroom)
-        }
-        findNavController().navigate(R.id.action_chatsFragment_to_chatroomFragment, bundle)
+    private fun navigateToChatroomFragment(chatroom: Chatroom) {
+        findNavController().navigate(
+            ChatsFragmentDirections.actionChatsFragmentToChatroomFragment(chatroom)
+        )
     }
 
 
     private fun progressBarTillCreate(visible: Boolean) {
-        progressBarEntering.isVisible = visible
-        tvEntering.isVisible = visible
+        binding.apply {
+            progressBarEntering.isVisible = visible
+            tvEntering.isVisible = visible
+        }
     }
 
     private fun progressBarTillFetch(visible: Boolean) {
-        progressBarFetching.isVisible = visible
+        binding.progressBarFetching.isVisible = visible
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

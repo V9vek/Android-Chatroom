@@ -9,19 +9,23 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.project.googlemaps2020.R
+import com.project.googlemaps2020.databinding.FragmentProfileBinding
 import com.project.googlemaps2020.models.User
 import com.project.googlemaps2020.utils.Resource
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_profile.*
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private val viewModel: ChatroomViewModel by activityViewModels()
 
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentProfileBinding.bind(view)
 
         initUI()
         setupListeners()
@@ -33,12 +37,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setupListeners() {
-        tvLogout.setOnClickListener {
-            confirmLogout()
-        }
+        binding.apply {
+            tvLogout.setOnClickListener {
+                confirmLogout()
+            }
 
-        ivBack.setOnClickListener {
-            findNavController().navigateUp()
+            ivBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 
@@ -48,7 +54,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             .setMessage("Are you sure you want to Logout")
             .setPositiveButton("Logout") { dialog, _ ->
                 viewModel.logout()
-                findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
+                findNavController().navigate(
+                    ProfileFragmentDirections.actionProfileFragmentToLoginFragment()
+                )
                 dialog.cancel()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
@@ -72,8 +80,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setUserDetails(user: User?) {
-        Glide.with(requireContext()).load(user?.profile_image).into(ivUserImage)
-        tvUserEmail.text = user?.email
-        tvUsername.text = user?.username
+        binding.apply {
+            Glide.with(requireContext()).load(user?.profile_image).into(ivUserImage)
+            tvUserEmail.text = user?.email
+            tvUsername.text = user?.username
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

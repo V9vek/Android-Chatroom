@@ -1,10 +1,13 @@
 package com.project.googlemaps2020.utils
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
@@ -12,10 +15,16 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.ui.IconGenerator
 import com.project.googlemaps2020.R
 import com.project.googlemaps2020.models.ClusterMarker
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import de.hdodenhof.circleimageview.CircleImageView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class ClusterManagerRenderer(
-    private val context: Context,
+    context: Context,
     map: GoogleMap?,
     clusterManager: ClusterManager<ClusterMarker>
 ) : DefaultClusterRenderer<ClusterMarker>(context, map, clusterManager) {
@@ -28,16 +37,41 @@ class ClusterManagerRenderer(
 
 
     override fun onBeforeClusterItemRendered(item: ClusterMarker, markerOptions: MarkerOptions) {
-        imageView.layoutParams = ViewGroup.LayoutParams(markerWidth, markerHeight)
-        imageView.setPadding(padding, padding, padding, padding)
-        iconGenerator.setContentView(imageView)
+        Picasso
+            .get()
+            .load(item.user.profile_image)
+            .into(object : Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    println("AppDebug: onBitmapLoaded $bitmap")
+                    imageView.setImageBitmap(bitmap)
+                    imageView.layoutParams = ViewGroup.LayoutParams(markerWidth, markerHeight)
+                    imageView.setPadding(padding, padding, padding, padding)
+                    iconGenerator.setContentView(imageView)
+                }
+
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    println("AppDebug: onBitmapFailed $e")
+                }
+
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    println("AppDebug: onPrepareLoad")
+                }
+            })
+
+        println("AppDebug: ")
 
         // imageView.setImageResource(R.drawable.ic_launcher_background)
 
-        Glide.with(context).asBitmap().load(item.user.profile_image)
-            .into(imageView)
-        val icon = iconGenerator.makeIcon()
+//        Glide.with(context).asBitmap().load(item.user.profile_image)
+//            .into(imageView)
+//        val icon = iconGenerator.makeIcon()
+//
+//        markerOptions
+//            .icon(BitmapDescriptorFactory.fromBitmap(icon))
+//            .title(item.customTitle)
+//            .snippet(item.customSnippet)
 
+        val icon = iconGenerator.makeIcon()
         markerOptions
             .icon(BitmapDescriptorFactory.fromBitmap(icon))
             .title(item.customTitle)

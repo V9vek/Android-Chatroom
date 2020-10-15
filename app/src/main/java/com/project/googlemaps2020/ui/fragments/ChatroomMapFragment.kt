@@ -1,7 +1,9 @@
 package com.project.googlemaps2020.ui.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -32,19 +34,18 @@ class ChatroomMapFragment : Fragment(R.layout.fragment_chatroom_map) {
     private var userLocations = mutableListOf<UserLocation>()
     private var currentUserLocation: UserLocation? = null
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapView.onCreate(savedInstanceState)
 
+        setupListeners()
+
         mapView.getMapAsync {
             map = it
             setupObservers()
-            addMapMarkers(map)
         }
-
-        setupListeners()
     }
+
 
     private fun addMapMarkers(map: GoogleMap?) {
         val clusterManager = ClusterManager<ClusterMarker>(requireContext(), map)
@@ -79,6 +80,7 @@ class ChatroomMapFragment : Fragment(R.layout.fragment_chatroom_map) {
             userLocations = it
             getCurrentUserLocation()
             moveCameraToUser()
+            addMapMarkers(map)
         })
     }
 

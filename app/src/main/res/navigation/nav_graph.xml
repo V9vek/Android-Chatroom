@@ -13,6 +13,8 @@
         <action
             android:id="@+id/action_loginFragment_to_chatsFragment"
             app:destination="@id/chatsFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/loginFragment"
@@ -34,6 +36,8 @@
         <action
             android:id="@+id/action_registerFragment_to_chatsFragment"
             app:destination="@id/chatsFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/loginFragment"
@@ -63,7 +67,9 @@
             app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_chatsFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            app:destination="@id/profileFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
     </fragment>
     <fragment
         android:id="@+id/chatroomFragment"
@@ -76,10 +82,10 @@
         <action
             android:id="@+id/action_chatroomFragment_to_chatroomDetailsFragment"
             app:destination="@id/chatroomDetailsFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/fragment_fade_enter"
+            app:popExitAnim="@anim/fragment_fade_exit" />
     </fragment>
     <fragment
         android:id="@+id/chatroomDetailsFragment"
@@ -92,11 +98,15 @@
         <action
             android:id="@+id/action_chatroomDetailsFragment_to_chatsFragment"
             app:destination="@id/chatsFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
             app:popUpTo="@id/chatsFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_chatroomDetailsFragment_to_chatroomMapFragment"
-            app:destination="@id/chatroomMapFragment" />
+            app:destination="@id/chatroomMapFragment"
+            app:enterAnim="@anim/fragment_fade_enter"
+            app:exitAnim="@anim/fragment_fade_exit" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"

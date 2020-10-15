@@ -11,25 +11,29 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.project.googlemaps2020.R
 import com.project.googlemaps2020.adapters.ChatroomUsersAdapter
+import com.project.googlemaps2020.databinding.FragmentChatroomDetailsBinding
+import com.project.googlemaps2020.databinding.FragmentChatsBinding
 import com.project.googlemaps2020.models.Chatroom
 import com.project.googlemaps2020.utils.Resource
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_chatroom_details.*
 
 @AndroidEntryPoint
 class ChatroomDetailsFragment : Fragment(R.layout.fragment_chatroom_details) {
 
+    private val viewModel: ChatroomViewModel by activityViewModels()
     private val args: ChatroomDetailsFragmentArgs by navArgs()
 
-    private val viewModel: ChatroomViewModel by activityViewModels()
+    private var _binding: FragmentChatroomDetailsBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var chatroom: Chatroom
     private lateinit var chatroomUsersAdapter: ChatroomUsersAdapter
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentChatroomDetailsBinding.bind(view)
+
         chatroom = args.chatroom
 
         initUI()
@@ -39,12 +43,14 @@ class ChatroomDetailsFragment : Fragment(R.layout.fragment_chatroom_details) {
     }
 
     private fun initUI() {
-        Glide.with(requireContext())
-            .load(chatroom.image)
-            .placeholder(ivChatroomImage.drawable)
-            .into(ivChatroomImage)
+        binding.apply {
+            Glide.with(requireContext())
+                .load(chatroom.image)
+                .placeholder(ivChatroomImage.drawable)
+                .into(ivChatroomImage)
 
-        tvChatroomName.text = chatroom.title
+            tvChatroomName.text = chatroom.title
+        }
 
         getChatroomUsers()
     }
@@ -54,22 +60,28 @@ class ChatroomDetailsFragment : Fragment(R.layout.fragment_chatroom_details) {
     }
 
     private fun setupListeners() {
-        ivBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        binding.apply {
+            ivBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
 
-        tvLeaveChatroom.setOnClickListener {
-            leaveChatroom()
-        }
+            tvLeaveChatroom.setOnClickListener {
+                leaveChatroom()
+            }
 
-        ivMap.setOnClickListener {
-            findNavController().navigate(R.id.action_chatroomDetailsFragment_to_chatroomMapFragment)
+            ivMap.setOnClickListener {
+                findNavController().navigate(
+                    ChatroomDetailsFragmentDirections.actionChatroomDetailsFragmentToChatroomMapFragment()
+                )
+            }
         }
     }
 
     private fun leaveChatroom() {
         viewModel.leaveChatroom(chatroom.chatroom_id)
-        findNavController().navigate(R.id.action_chatroomDetailsFragment_to_chatsFragment)
+        findNavController().navigate(
+            ChatroomDetailsFragmentDirections.actionChatroomDetailsFragmentToChatsFragment()
+        )
     }
 
     private fun setupObservers() {
@@ -90,10 +102,17 @@ class ChatroomDetailsFragment : Fragment(R.layout.fragment_chatroom_details) {
     }
 
     private fun setUpRecyclerView() {
-        rvUsers.apply {
-            chatroomUsersAdapter = ChatroomUsersAdapter()
-            adapter = chatroomUsersAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+        binding.apply {
+            rvUsers.apply {
+                chatroomUsersAdapter = ChatroomUsersAdapter()
+                adapter = chatroomUsersAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+            }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

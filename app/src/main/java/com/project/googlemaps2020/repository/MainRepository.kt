@@ -13,8 +13,11 @@ import com.project.googlemaps2020.models.Chatroom
 import com.project.googlemaps2020.models.User
 import com.project.googlemaps2020.models.UserLocation
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class MainRepository(
+class MainRepository
+@Inject
+constructor(
     private val auth: FirebaseAuth,
     private val storageRef: StorageReference,
     private val firestoreRef: FirebaseFirestore

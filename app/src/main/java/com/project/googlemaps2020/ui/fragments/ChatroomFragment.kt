@@ -12,24 +12,29 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.project.googlemaps2020.R
 import com.project.googlemaps2020.adapters.ChatMessageAdapter
+import com.project.googlemaps2020.databinding.FragmentChatroomBinding
+import com.project.googlemaps2020.databinding.FragmentChatsBinding
 import com.project.googlemaps2020.models.Chatroom
 import com.project.googlemaps2020.utils.Resource
 import com.project.googlemaps2020.viewmodels.ChatroomViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_chatroom.*
 
 @AndroidEntryPoint
 class ChatroomFragment : Fragment(R.layout.fragment_chatroom) {
 
+    private val viewModel: ChatroomViewModel by activityViewModels()
     private val args: ChatroomFragmentArgs by navArgs()
 
-    private val viewModel: ChatroomViewModel by activityViewModels()
+    private var _binding: FragmentChatroomBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var chatroom: Chatroom
     private lateinit var chatMessageAdapter: ChatMessageAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentChatroomBinding.bind(view)
+
         chatroom = args.chatroom
         joinChatroom()
 
@@ -44,39 +49,41 @@ class ChatroomFragment : Fragment(R.layout.fragment_chatroom) {
     }
 
     private fun initUI() {
-        Glide.with(requireContext())
-            .load(chatroom.image)
-            .placeholder(ivChatroomImage.drawable)
-            .into(ivChatroomImage)
+        binding.apply {
+            Glide.with(requireContext())
+                .load(chatroom.image)
+                .placeholder(ivChatroomImage.drawable)
+                .into(ivChatroomImage)
 
-        tvChatroom.text = chatroom.title
+            tvChatroom.text = chatroom.title
+        }
 
         getChatMessages()
     }
 
     private fun setupListeners() {
-        ivBackBtn.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        ivSendBtn.setOnClickListener {
-            insertNewMessage()
-            clearMessage()
-        }
-
-        toolbarChats.setOnClickListener {
-            val bundle = Bundle().apply {
-                putParcelable("chatroom", chatroom)
+        binding.apply {
+            ivBackBtn.setOnClickListener {
+                findNavController().navigateUp()
             }
-            findNavController().navigate(
-                R.id.action_chatroomFragment_to_chatroomDetailsFragment,
-                bundle
-            )
+
+            ivSendBtn.setOnClickListener {
+                insertNewMessage()
+                clearMessage()
+            }
+
+            toolbarChats.setOnClickListener {
+                findNavController().navigate(
+                    ChatroomFragmentDirections.actionChatroomFragmentToChatroomDetailsFragment(
+                        chatroom
+                    )
+                )
+            }
         }
     }
 
     private fun insertNewMessage() {
-        val message = etMessage.text.toString()
+        val message = binding.etMessage.text.toString()
         if (message.isNotBlank()) {
             viewModel.insertNewMessage(chatroom.chatroom_id, message)
         }
@@ -121,30 +128,37 @@ class ChatroomFragment : Fragment(R.layout.fragment_chatroom) {
     }
 
     private fun clearMessage() {
-        etMessage.setText("")
+        binding.etMessage.setText("")
     }
 
     private fun setUpRecyclerView() {
-        rvChat.apply {
-            chatMessageAdapter = ChatMessageAdapter()
-            adapter = chatMessageAdapter
-            layoutManager = LinearLayoutManager(requireContext())
-        }
+        binding.apply {
+            rvChat.apply {
+                chatMessageAdapter = ChatMessageAdapter()
+                adapter = chatMessageAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+            }
 
-        rvChat.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-            if (bottom < oldBottom) {
-                scrollToBottom()
+            rvChat.addOnLayoutChangeListener { view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                if (bottom < oldBottom) {
+                    scrollToBottom()
+                }
             }
         }
     }
 
     private fun scrollToBottom() {
         if (chatMessageAdapter.currentList.size > 0) {
-            rvChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
+            binding.rvChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
         }
     }
 
     private fun progressBarTillFetch(visible: Boolean) {
-        progressBarFetching.isVisible = visible
+        binding.progressBarFetching.isVisible = visible
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
